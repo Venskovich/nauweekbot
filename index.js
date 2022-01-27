@@ -170,6 +170,10 @@ bot.on("message", msg => {
 
         sendMessage(chatId, start())
 
+        // A user calls this command 90% times at private messages with the bot, when getting acquinted with it. Clearing up all messages means autodelete the chat from chatlist of the user. So it is mandatory not to delete the bot answer
+        deleteMessages(chatId, msgId, false)
+        return
+
     }
 
 
