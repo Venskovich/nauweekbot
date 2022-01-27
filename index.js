@@ -60,6 +60,7 @@ bot.on("message", msg => {
         } else if (text.includes(commands.invert)) {
 
             sendMessage(chatId, invert())
+            saveMode()
 
         }
 
@@ -104,7 +105,7 @@ bot.on("message", msg => {
                 sendMessage(chatId, `<a href="tg://user?id=${userId}">Користувач</a> доданий до чорного списку на добу`)
 
                 deleteMessages(chatId, msgId, false)
-                saveData()
+                saveBanlist()
 
                 return
 
@@ -119,6 +120,9 @@ bot.on("message", msg => {
             // Setting time when this the last command request was called
             user.lastMsgTime = msgTime
 
+            // Saving users data
+            saveUsers()
+
         } else {
 
             // Creating user profile
@@ -131,6 +135,9 @@ bot.on("message", msg => {
             // Pushing this user to users array
             users.push(user)
 
+            // Saving users
+            saveUsers()
+
         }
 
     }
@@ -142,9 +149,18 @@ bot.on("message", msg => {
 
         // Increasinng stats counter and adding a chat to chats list
         stats++
+
         if (!chats.includes(chatId)) {
+
             chats.push(chatId)
+
+            // Saving chats array
+            saveChats()
+
         }
+
+        // Saving stats counter
+        saveStats()
 
     } else if (text.includes(commands.readme)) {
 
@@ -159,10 +175,6 @@ bot.on("message", msg => {
 
     // Deleting messages
     deleteMessages(chatId, msgId)
-
-
-    // Saving data
-    saveData()
 
 })
 
@@ -328,24 +340,32 @@ function deleteMessages(chatId, msgId, deleteReply = true, delay = 60) {
 
 }
 
-// Function to save data
-function saveData() {
-
+// Functions to save data
+function saveStats() {
     fs.writeFile("stats.json", JSON.stringify(stats), err => {
         if (err) throw err; // Checking for errors
     })
+}
+function saveChats() {
     fs.writeFile("chats.json", JSON.stringify(chats), err => {
         if (err) throw err; // Checking for errors
     })
+}
+function saveUsers() {
     fs.writeFile("users.json", JSON.stringify(users), err => {
         if (err) throw err; // Checking for errors
     })
+}
+function saveBanlist() {
     fs.writeFile("banlist.json", JSON.stringify(banlist), err => {
         if (err) throw err; // Checking for errors
     })
-
 }
-
+function saveMode() {
+    fs.writeFile("mode.json", JSON.stringify(mode), err => {
+        if (err) throw err; // Checking for errors
+    })
+}
 
 
 // Special added function to find out which week number it is now
