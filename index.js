@@ -9,8 +9,6 @@ var mode = require("./mode")
 var devId = require("./devId")
 var chats = require("./chats")
 var stats = require("./stats")
-var users = require("./users")
-var banlist = require("./banlist")
 
 
 
@@ -78,70 +76,6 @@ bot.on("message", msg => {
     }
 
 
-    // Antiflood system
-    if (allCommands.includes(text)) {
-
-        // Checking if this userId is already banned. If true, then ignore user
-        if (isUserBanned(userId)) {
-
-            deleteMessages(chatId, msgId, false)
-            return
-
-        }
-
-        let msgTime = Math.floor(Date.now() / 1000)
-
-        // Checking if this userId is in users array already
-        if (isThereUser(userId)) {
-
-            // Getting the user
-            let user = getUser(userId)
-
-            // If user has called commands more than 3 times less than 3 second between them
-            // then push him to banlist
-            if (user.warnings >= 3) {
-
-                banlist.push(userId)
-                sendMessage(chatId, `<a href="tg://user?id=${userId}">Користувач</a> доданий до чорного списку на добу`)
-
-                deleteMessages(chatId, msgId, false)
-                saveBanlist()
-
-                return
-
-            }
-
-            // If user has called bot command less then 3 seconds from the last call,
-            // then increase his warnings
-            if ((msgTime - user.lastMsgTime) <= 3) {
-                user.warnings++;
-            }
-
-            // Setting time when this the last command request was called
-            user.lastMsgTime = msgTime
-
-            // Saving users data
-            saveUsers()
-
-        } else {
-
-            // Creating user profile
-            let user = {
-                id: userId,
-                lastMsgTime: msgTime,
-                warnings: 0
-            }
-
-            // Pushing this user to users array
-            users.push(user)
-
-            // Saving users
-            saveUsers()
-
-        }
-
-    }
-
     // Main bot commands
     if (text.includes(commands.nauweek)) {
 
@@ -179,6 +113,8 @@ bot.on("message", msg => {
 
     // Deleting messages
     deleteMessages(chatId, msgId)
+
+    return
 
 })
 
@@ -252,75 +188,6 @@ function invert() {
 }
 
 
-// Antiflood / Renew users and banlist every midnight
-setTimeout(function () {
-
-    users = []
-    banlist = []
-    saveData()
-
-    setInterval(function () {
-
-        users = []
-        banlist = []
-        saveData()
-    
-    }, 24 * 60 * 60 * 1000)
-
-}, delayToMidnight())
-
-// Function to calculate delay to midnight, so users and banlist arrays could renew at midnight every day
-function delayToMidnight() {
-
-    let thisDay = new Date()
-    let nextDay = new Date()
-
-    nextDay.setDate(thisDay.getDate() + 1)
-    nextDay.setHours(0, 0, 0, 0)
-
-    return nextDay.getTime() - thisDay.getTime()
-
-}
-
-// Antiflood / Function to check if there is this userId in users array
-function isThereUser(userId) {
-
-    for (user of users) {
-        if (user.id === userId) {
-            return true
-        }
-    }
-
-    return false
-
-}
-
-// Antiflood / Function to get user
-function getUser(userId) {
-
-    for (user of users) {
-        if (user.id === userId) {
-            return user
-        }
-    }
-
-    return false
-}
-
-// Antiflood / Function to check if a user is banned
-function isUserBanned(userId) {
-
-    for (id of banlist) {
-        if (id === userId) {
-            return true
-        }
-    }
-
-    return false
-
-}
-
-
 
 // Simplified way to send a message
 function sendMessage(chatId, text) {
@@ -352,16 +219,6 @@ function saveStats() {
 }
 function saveChats() {
     fs.writeFile("chats.json", JSON.stringify(chats), err => {
-        if (err) throw err; // Checking for errors
-    })
-}
-function saveUsers() {
-    fs.writeFile("users.json", JSON.stringify(users), err => {
-        if (err) throw err; // Checking for errors
-    })
-}
-function saveBanlist() {
-    fs.writeFile("banlist.json", JSON.stringify(banlist), err => {
         if (err) throw err; // Checking for errors
     })
 }
