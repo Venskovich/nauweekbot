@@ -3,6 +3,6 @@ Telegram bot, which answers user, which studying week it is now
 
 Created for National Aviation University, Kyiv
 
-More than 1 thousand commands request (01 Jan - 26 Jan)
+https://t.me/nauweekbot
 
-The bot has antiflood system also
+More than 1,500 command requests and 150 chats (01 Jan - 08 Jan)
