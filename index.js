@@ -111,8 +111,8 @@ bot.on("message", msg => {
     }
 
 
-    // Deleting messages
-    deleteMessages(chatId, msgId)
+    // Deleting message
+    deleteMessage(chatId, msgId)
 
     return
 
@@ -153,7 +153,7 @@ function whatWeek(weekNum) {
 
 // Function to get readme message
 function readme() {
-    return "Бот запобігає флуду, видаляючи надіслані команди та їх результат протягом хвилини. Задля цього, надайте @nauweekbot статус адміністратора групи із можливістю видалення повідомлень"
+    return "Бот запобігає флуду, видаляючи надіслані команди (command requests). Задля цього, надайте @nauweekbot статус адміністратора групи із можливістю видалення повідомлень"
 }
 
 // Function to get start message
@@ -195,19 +195,11 @@ function sendMessage(chatId, text) {
 }
 
 // Function to clear up user command request message and bot's reply
-function deleteMessages(chatId, msgId, deleteReply = true, delay = 60) {
+function deleteMessage(chatId, msgId) {
 
     setTimeout(function () {
         bot.deleteMessage(chatId, msgId)
     }, 1 * 1000)
-
-    if (deleteReply) {
-
-        setTimeout(function () {
-            bot.deleteMessage(chatId, ++msgId)
-        }, delay * 1000)
-
-    }
 
 }
 
