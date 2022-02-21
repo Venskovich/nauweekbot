@@ -5,4 +5,4 @@ Created for National Aviation University, Kyiv
 
 https://t.me/nauweekbot
 
-More than 1,500 command requests and 150 chats (01 Jan - 08 Jan)
+More than 2,500 command requests and 400 chats (01 Jan - 21 Feb)
